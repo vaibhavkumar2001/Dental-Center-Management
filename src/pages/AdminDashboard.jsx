@@ -15,6 +15,7 @@ const AdminDashboard = () => {
       </div>
 
       <PatientList />
+      <IncidentList />
     </div>
   );
 };
