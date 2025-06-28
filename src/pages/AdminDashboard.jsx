@@ -2,7 +2,7 @@ import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import PatientList from '../components/Patients/PatientList';
 import IncidentList from '../components/Incidents/IncidentList';
-import CalendarView from '../components/Calendar/CalendarView';
+import CalendarView from '../components/Calender/CalendarView';
 
 const AdminDashboard = () => {
   const { user, logout } = useAuth();
