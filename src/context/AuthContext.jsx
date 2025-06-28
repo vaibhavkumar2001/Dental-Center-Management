@@ -8,6 +8,17 @@ const initialUsers = [
   { id: "2", role: "Patient", email: "john@entnt.in", password: "patient123", patientId: "p1" }
 ];
 
+// Initial hardcoded patients
+const initialPatients = [
+  {
+    id: "p1",
+    name: "John Doe",
+    dob: "1990-05-10",
+    contact: "1234567890",
+    healthInfo: "No allergies"
+  }
+];
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
     const storedUser = localStorage.getItem("user");
@@ -15,21 +26,22 @@ export const AuthProvider = ({ children }) => {
   });
 
   useEffect(() => {
-    // Only set initial users if not already in localStorage
-    const storedUsers = localStorage.getItem("users");
-    if (!storedUsers) {
+    // Initialize users
+    if (!localStorage.getItem("users")) {
       localStorage.setItem("users", JSON.stringify(initialUsers));
-      console.log("Initial users added to localStorage.");
-    } else {
-      console.log("Users already exist in localStorage.");
+      console.log("✅ Initial users added to localStorage.");
+    }
+
+    // Initialize patients
+    if (!localStorage.getItem("patients")) {
+      localStorage.setItem("patients", JSON.stringify(initialPatients));
+      console.log("✅ Initial patients added to localStorage.");
     }
   }, []);
 
   const login = (email, password) => {
     const usersJSON = localStorage.getItem("users");
     const users = usersJSON ? JSON.parse(usersJSON) : [];
-
-    console.log("Loaded users from localStorage:", users);
 
     const foundUser = users.find(
       (u) => u.email === email && u.password === password
