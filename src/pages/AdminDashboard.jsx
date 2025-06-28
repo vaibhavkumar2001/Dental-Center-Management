@@ -4,6 +4,8 @@ import PatientList from '../components/Patients/PatientList';
 import IncidentList from '../components/Incidents/IncidentList';
 import CalendarView from '../components/Calender/CalendarView';
 import DashboardKPIs from '../components/Dashboard/DashboardKPIs'; // 🆕 Import this new component
+import MockDataButton from '../components/Dev/MockDataButton';
+
 
 const AdminDashboard = () => {
   const { user, logout } = useAuth();
@@ -25,6 +27,8 @@ const AdminDashboard = () => {
           Logout
         </button>
       </header>
+      <MockDataButton />
+
 
       {/* KPIs Section */}
       <section className="bg-white rounded-xl shadow p-6 mb-6">

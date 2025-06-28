@@ -21,7 +21,10 @@ const IncidentForm = ({ initialData = null, onComplete }) => {
 
   useEffect(() => {
     setPatients(getPatients());
-    if (initialData) setForm(initialData);
+    if (initialData) {
+      // Merge to ensure missing fields like `files` are present
+      setForm({ ...emptyForm, ...initialData });
+    }
   }, [initialData]);
 
   const handleChange = (e) => {
@@ -39,7 +42,7 @@ const IncidentForm = ({ initialData = null, onComplete }) => {
       };
       setForm((prev) => ({
         ...prev,
-        files: [...prev.files, fileObj]
+        files: [...(prev.files || []), fileObj]
       }));
     };
 
@@ -67,35 +70,103 @@ const IncidentForm = ({ initialData = null, onComplete }) => {
     <form onSubmit={handleSubmit} className="bg-gray-50 p-4 rounded shadow-sm">
       <h3 className="font-semibold mb-3">{initialData ? 'Edit' : 'Add'} Incident</h3>
       <div className="grid grid-cols-2 gap-4">
-        <select name="patientId" value={form.patientId} onChange={handleChange} className="border p-2 rounded" required>
+        <select
+          name="patientId"
+          value={form.patientId}
+          onChange={handleChange}
+          className="border p-2 rounded"
+          required
+        >
           <option value="">Select Patient</option>
           {patients.map(p => (
             <option key={p.id} value={p.id}>{p.name}</option>
           ))}
         </select>
 
-        <input type="text" name="title" placeholder="Title" value={form.title} onChange={handleChange} className="border p-2 rounded" required />
-        <input type="datetime-local" name="appointmentDate" value={form.appointmentDate} onChange={handleChange} className="border p-2 rounded" required />
-        <input type="text" name="status" placeholder="Status (Pending/Completed)" value={form.status} onChange={handleChange} className="border p-2 rounded" />
-        <input type="number" name="cost" placeholder="Cost (₹)" value={form.cost} onChange={handleChange} className="border p-2 rounded" />
-        <input type="text" name="treatment" placeholder="Treatment Info" value={form.treatment} onChange={handleChange} className="border p-2 rounded" />
-        <input type="text" name="comments" placeholder="Comments" value={form.comments} onChange={handleChange} className="border p-2 rounded" />
-        <input type="date" name="nextDate" value={form.nextDate} onChange={handleChange} className="border p-2 rounded" />
+        <input
+          type="text"
+          name="title"
+          placeholder="Title"
+          value={form.title}
+          onChange={handleChange}
+          className="border p-2 rounded"
+          required
+        />
 
-        <input type="file" onChange={handleFileChange} className="col-span-2 border p-2 rounded" />
+        <input
+          type="datetime-local"
+          name="appointmentDate"
+          value={form.appointmentDate}
+          onChange={handleChange}
+          className="border p-2 rounded"
+          required
+        />
+
+        <input
+          type="text"
+          name="status"
+          placeholder="Status (Pending/Completed)"
+          value={form.status}
+          onChange={handleChange}
+          className="border p-2 rounded"
+        />
+
+        <input
+          type="number"
+          name="cost"
+          placeholder="Cost (₹)"
+          value={form.cost}
+          onChange={handleChange}
+          className="border p-2 rounded"
+        />
+
+        <input
+          type="text"
+          name="treatment"
+          placeholder="Treatment Info"
+          value={form.treatment}
+          onChange={handleChange}
+          className="border p-2 rounded"
+        />
+
+        <input
+          type="text"
+          name="comments"
+          placeholder="Comments"
+          value={form.comments}
+          onChange={handleChange}
+          className="border p-2 rounded"
+        />
+
+        <input
+          type="date"
+          name="nextDate"
+          value={form.nextDate}
+          onChange={handleChange}
+          className="border p-2 rounded"
+        />
+
+        <input
+          type="file"
+          onChange={handleFileChange}
+          className="col-span-2 border p-2 rounded"
+        />
       </div>
 
       <div className="mt-4">
-        {form.files.length > 0 && (
+        {(form.files || []).length > 0 && (
           <div className="text-sm text-gray-700">
-            Attached: {form.files.map((f, i) => (
+            Attached: {(form.files || []).map((f, i) => (
               <span key={i} className="mr-2">{f.name}</span>
             ))}
           </div>
         )}
       </div>
 
-      <button type="submit" className="mt-4 bg-green-600 text-white px-4 py-2 rounded">
+      <button
+        type="submit"
+        className="mt-4 bg-green-600 text-white px-4 py-2 rounded"
+      >
         {initialData ? 'Update' : 'Add'} Incident
       </button>
     </form>

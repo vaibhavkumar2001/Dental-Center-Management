@@ -11,25 +11,26 @@ const MockDataButton = () => {
     ];
 
     const mockIncidents = [
-      // p1
+      // All 5 patients have at least one completed treatment with cost
       { id: "i1", patientId: "p1", title: "Root Canal", datetime: "2025-06-30T10:30", status: "completed", cost: 3000 },
-      { id: "i2", patientId: "p1", title: "Cleaning", datetime: "2025-07-05T09:00", status: "pending" },
-      // p2
-      { id: "i3", patientId: "p2", title: "Filling", datetime: "2025-07-01T14:00", status: "completed", cost: 1500 },
-      { id: "i4", patientId: "p2", title: "Follow-up", datetime: "2025-07-03T15:00", status: "pending" },
-      // p3
-      { id: "i5", patientId: "p3", title: "Braces Consult", datetime: "2025-07-04T12:00", status: "completed", cost: 500 },
-      // p4
-      { id: "i6", patientId: "p4", title: "Extraction", datetime: "2025-07-01T10:00", status: "completed", cost: 2000 },
-      // p5
-      { id: "i7", patientId: "p5", title: "Implant", datetime: "2025-07-07T11:30", status: "pending" },
-      { id: "i8", patientId: "p5", title: "Checkup", datetime: "2025-07-09T16:00", status: "pending" },
+      { id: "i2", patientId: "p2", title: "Filling", datetime: "2025-07-01T14:00", status: "completed", cost: 1500 },
+      { id: "i3", patientId: "p3", title: "Braces Consult", datetime: "2025-07-04T12:00", status: "completed", cost: 500 },
+      { id: "i4", patientId: "p4", title: "Extraction", datetime: "2025-07-01T10:00", status: "completed", cost: 2000 },
+      { id: "i5", patientId: "p5", title: "Checkup", datetime: "2025-07-02T11:00", status: "completed", cost: 1000 },
+      
+      // Some upcoming appointments for KPIs
+      { id: "i6", patientId: "p1", title: "Follow-up", datetime: "2025-07-05T09:00", status: "pending" },
+      { id: "i7", patientId: "p2", title: "Cleaning", datetime: "2025-07-06T10:00", status: "pending" },
+      { id: "i8", patientId: "p3", title: "Whitening", datetime: "2025-07-07T11:00", status: "pending" },
+      { id: "i9", patientId: "p4", title: "Consultation", datetime: "2025-07-08T12:00", status: "pending" },
+      { id: "i10", patientId: "p5", title: "Implant Planning", datetime: "2025-07-09T13:00", status: "pending" },
     ];
 
     localStorage.setItem("patients", JSON.stringify(mockPatients));
     localStorage.setItem("incidents", JSON.stringify(mockIncidents));
 
-    alert("✅ Mock patients and incidents added to localStorage!");
+    alert("✅ 5 mock patients and 10 incidents added to localStorage!");
+    window.location.reload(); // auto-refresh dashboard
   };
 
   return (
