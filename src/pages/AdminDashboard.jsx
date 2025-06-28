@@ -3,12 +3,14 @@ import { useAuth } from '../context/AuthContext';
 import PatientList from '../components/Patients/PatientList';
 import IncidentList from '../components/Incidents/IncidentList';
 import CalendarView from '../components/Calender/CalendarView';
+import DashboardKPIs from '../components/Dashboard/DashboardKPIs'; // 🆕 Import this new component
 
 const AdminDashboard = () => {
   const { user, logout } = useAuth();
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
+      {/* Header */}
       <header className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">
@@ -24,16 +26,25 @@ const AdminDashboard = () => {
         </button>
       </header>
 
+      {/* KPIs Section */}
+      <section className="bg-white rounded-xl shadow p-6 mb-6">
+        <h2 className="text-xl font-semibold mb-4 text-blue-600">📊 Dashboard KPIs</h2>
+        <DashboardKPIs />
+      </section>
+
+      {/* Patient Management */}
       <section className="bg-white rounded-xl shadow p-6 mb-6">
         <h2 className="text-xl font-semibold mb-4 text-blue-600">👥 Patient Management</h2>
         <PatientList />
       </section>
 
+      {/* Incident Management */}
       <section className="bg-white rounded-xl shadow p-6 mb-6">
         <h2 className="text-xl font-semibold mb-4 text-blue-600">📂 Appointment / Incident Management</h2>
         <IncidentList />
       </section>
 
+      {/* Calendar View */}
       <section className="bg-white rounded-xl shadow p-6">
         <h2 className="text-xl font-semibold mb-4 text-blue-600">📅 Calendar View</h2>
         <CalendarView />
