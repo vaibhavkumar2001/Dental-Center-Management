@@ -1,58 +1,95 @@
-import React from 'react';
-import { useAuth } from '../context/AuthContext';
-import PatientList from '../components/Patients/PatientList';
-import IncidentList from '../components/Incidents/IncidentList';
-import CalendarView from '../components/Calender/CalendarView';
-import DashboardKPIs from '../components/Dashboard/DashboardKPIs'; // 🆕 Import this new component
-import MockDataButton from '../components/Dev/MockDataButton';
-
+import React, { useEffect, useState } from 'react';
+import { CheckCircleIcon, XCircleIcon, UserIcon } from '@heroicons/react/24/solid';
 
 const AdminDashboard = () => {
-  const { user, logout } = useAuth();
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    const allUsers = JSON.parse(localStorage.getItem('users')) || [];
+    setUsers(allUsers);
+  }, []);
+
+  const handleUpdateStatus = (patientId, appointmentId, newStatus) => {
+    const updatedUsers = users.map(user => {
+      if (user.id === patientId) {
+        const updatedAppointments = user.appointments.map(app => {
+          if (app.id === appointmentId) {
+            return { ...app, status: newStatus };
+          }
+          return app;
+        });
+        return { ...user, appointments: updatedAppointments };
+      }
+      return user;
+    });
+
+    setUsers(updatedUsers);
+    localStorage.setItem('users', JSON.stringify(updatedUsers));
+  };
+
+  const allAppointments = users
+    .filter(u => u.role === 'patient')
+    .flatMap(user =>
+      (user.appointments || []).map(app => ({
+        ...app,
+        patientName: user.name,
+        patientId: user.id,
+        email: user.email,
+      }))
+    );
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      {/* Header */}
-      <header className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800">
-            🦷 Welcome, {user?.email}
-          </h1>
-          <p className="text-sm text-gray-500">Admin Dashboard</p>
+    <div className="min-h-screen p-8 bg-gradient-to-b from-gray-50 to-white">
+      <h1 className="text-3xl font-bold text-center text-indigo-700 mb-8">
+        🛠 Admin Dashboard – Approve/Reject Appointments
+      </h1>
+
+      {allAppointments.length === 0 ? (
+        <p className="text-center text-gray-500">No appointments found.</p>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {allAppointments.map(app => (
+            <div
+              key={app.id}
+              className="bg-white p-5 rounded-xl shadow border hover:shadow-lg transition-all"
+            >
+              <div className="mb-2 flex items-center gap-2 text-sm text-gray-600">
+                <UserIcon className="w-5 h-5 text-indigo-500" />
+                {app.patientName} ({app.email})
+              </div>
+              <p><strong>🆔 ID:</strong> {app.id}</p>
+              <p><strong>💊 Treatment:</strong> {app.treatment}</p>
+              <p><strong>🗓 Date:</strong> {app.date}</p>
+              <p><strong>⏰ Time:</strong> {app.time}</p>
+              <p><strong>💰 Cost:</strong> ₹{app.cost}</p>
+              <p><strong>Status:</strong> <span className="capitalize">{app.status}</span></p>
+
+              {app.status === 'upcoming' && (
+                <div className="mt-3 flex gap-3">
+                  <button
+                    onClick={() =>
+                      handleUpdateStatus(app.patientId, app.id, 'approved')
+                    }
+                    className="flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded"
+                  >
+                    <CheckCircleIcon className="w-4 h-4" />
+                    Approve
+                  </button>
+                  <button
+                    onClick={() =>
+                      handleUpdateStatus(app.patientId, app.id, 'rejected')
+                    }
+                    className="flex items-center gap-1 bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
+                  >
+                    <XCircleIcon className="w-4 h-4" />
+                    Reject
+                  </button>
+                </div>
+              )}
+            </div>
+          ))}
         </div>
-        <button
-          onClick={logout}
-          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
-        >
-          Logout
-        </button>
-      </header>
-      <MockDataButton />
-
-
-      {/* KPIs Section */}
-      <section className="bg-white rounded-xl shadow p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-4 text-blue-600">📊 Dashboard KPIs</h2>
-        <DashboardKPIs />
-      </section>
-
-      {/* Patient Management */}
-      <section className="bg-white rounded-xl shadow p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-4 text-blue-600">👥 Patient Management</h2>
-        <PatientList />
-      </section>
-
-      {/* Incident Management */}
-      <section className="bg-white rounded-xl shadow p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-4 text-blue-600">📂 Appointment / Incident Management</h2>
-        <IncidentList />
-      </section>
-
-      {/* Calendar View */}
-      <section className="bg-white rounded-xl shadow p-6">
-        <h2 className="text-xl font-semibold mb-4 text-blue-600">📅 Calendar View</h2>
-        <CalendarView />
-      </section>
+      )}
     </div>
   );
 };

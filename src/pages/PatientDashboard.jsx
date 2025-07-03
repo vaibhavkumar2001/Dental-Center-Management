@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   ClipboardDocumentCheckIcon,
@@ -10,6 +11,7 @@ import {
 } from '@heroicons/react/24/outline';
 
 const PatientDashboard = () => {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [appointments, setAppointments] = useState([]);
   const [form, setForm] = useState({
@@ -32,12 +34,18 @@ const PatientDashboard = () => {
     }
   }, []);
 
-  // Handle form input change
+  // Logout handler
+  const handleLogout = () => {
+    localStorage.removeItem('currentUser');
+    navigate('/login');
+  };
+
+  // Form change handler
   const handleChange = (e) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  // Handle new appointment booking
+  // Book appointment
   const handleBookAppointment = (e) => {
     e.preventDefault();
     const newAppointment = {
@@ -50,17 +58,15 @@ const PatientDashboard = () => {
     const updatedAppointments = [...appointments, newAppointment];
     const updatedUser = { ...user, appointments: updatedAppointments };
 
-    // Save back to localStorage
+    // Update localStorage
     localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-
-    // Optional: update users array
     const allUsers = JSON.parse(localStorage.getItem('users')) || [];
     const updatedUsers = allUsers.map((u) =>
       u.id === updatedUser.id ? updatedUser : u
     );
     localStorage.setItem('users', JSON.stringify(updatedUsers));
 
-    // Update UI
+    // Update state
     setUser(updatedUser);
     setAppointments(updatedAppointments);
     setForm({ date: '', time: '', treatment: '', cost: '', attachment: '' });
@@ -75,9 +81,18 @@ const PatientDashboard = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        <h1 className="text-4xl font-extrabold text-center text-indigo-700 mb-8 tracking-tight">
-          👋 Welcome, {user?.name || 'Patient'}
-        </h1>
+        {/* Top Bar */}
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-4xl font-extrabold text-indigo-700 tracking-tight">
+            👋 Welcome, {user?.name || 'Patient'}
+          </h1>
+          <button
+            onClick={handleLogout}
+            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded shadow"
+          >
+            🔒 Logout
+          </button>
+        </div>
 
         {/* Patient Info */}
         <motion.section
@@ -95,7 +110,7 @@ const PatientDashboard = () => {
           </div>
         </motion.section>
 
-        {/* Book Appointment Form */}
+        {/* Book Appointment */}
         <motion.section
           className="bg-gradient-to-r from-blue-100 to-blue-50 p-6 rounded-xl shadow-lg mb-10 border border-blue-200"
           whileHover={{ scale: 1.01 }}
@@ -181,13 +196,17 @@ const PatientDashboard = () => {
                   <p><strong>💰 Cost:</strong> ₹{app.cost}</p>
                   <p className="flex items-center gap-1 mt-1">
                     <strong>Status:</strong>
-                    {app.status === 'completed' ? (
+                    {app.status === 'completed' || app.status === 'approved' ? (
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 text-sm bg-green-100 text-green-700 rounded-full">
-                        <CheckCircleIcon className="w-4 h-4" /> Completed
+                        <CheckCircleIcon className="w-4 h-4" /> {app.status}
+                      </span>
+                    ) : app.status === 'rejected' ? (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 text-sm bg-red-100 text-red-700 rounded-full">
+                        ❌ Rejected
                       </span>
                     ) : (
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 text-sm bg-yellow-100 text-yellow-700 rounded-full">
-                        <ClockIcon className="w-4 h-4" /> Upcoming
+                        <ClockIcon className="w-4 h-4" /> {app.status}
                       </span>
                     )}
                   </p>

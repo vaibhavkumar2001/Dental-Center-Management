@@ -29,6 +29,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<RoleBasedDashboard />} />
         <Route path="*" element={<Navigate to="/" />} />
+        <Route path="/dashboard/admin" element={<AdminDashboard />} />
       </Routes>
     </Router>
   );
