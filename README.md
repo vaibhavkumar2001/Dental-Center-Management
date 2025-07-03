@@ -33,7 +33,8 @@ bash
 Copy
 Edit
 npm run dev
-Visit: http://localhost:5173
+Visit: dental-center-management-drab.vercel.app
+
 
 🧱 Project Architecture
 bash
