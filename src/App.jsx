@@ -12,14 +12,14 @@ function App() {
         {
           id: 'admin001',
           name: 'Dr. Admin',
-          email: 'admin@example.com',
+          email: 'admin@entnt.in',
           password: 'admin123',
           role: 'admin',
         },
         {
           id: 'p001',
           name: 'John Doe',
-          email: 'john@example.com',
+          email: 'john@entnt.in',
           password: 'john123',
           role: 'patient',
           appointments: [
