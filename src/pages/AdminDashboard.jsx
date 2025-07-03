@@ -1,95 +1,108 @@
-import React, { useEffect, useState } from 'react';
-import { CheckCircleIcon, XCircleIcon, UserIcon } from '@heroicons/react/24/solid';
+import React from 'react';
+import { useAuth } from '../context/AuthContext';
+import PatientList from '../components/Patients/PatientList';
+import IncidentList from '../components/Incidents/IncidentList';
+import CalendarView from '../components/Calender/CalendarView';
+import DashboardKPIs from '../components/Dashboard/DashboardKPIs';
+import MockDataButton from '../components/Dev/MockDataButton';
+import { motion } from 'framer-motion';
 
 const AdminDashboard = () => {
-  const [users, setUsers] = useState([]);
+  const { user, logout } = useAuth();
 
-  useEffect(() => {
-    const allUsers = JSON.parse(localStorage.getItem('users')) || [];
-    setUsers(allUsers);
-  }, []);
-
-  const handleUpdateStatus = (patientId, appointmentId, newStatus) => {
-    const updatedUsers = users.map(user => {
-      if (user.id === patientId) {
-        const updatedAppointments = user.appointments.map(app => {
-          if (app.id === appointmentId) {
-            return { ...app, status: newStatus };
-          }
-          return app;
-        });
-        return { ...user, appointments: updatedAppointments };
-      }
-      return user;
-    });
-
-    setUsers(updatedUsers);
-    localStorage.setItem('users', JSON.stringify(updatedUsers));
+  const sectionVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: (i) => ({
+      opacity: 1,
+      y: 0,
+      transition: { delay: i * 0.15 },
+    }),
   };
 
-  const allAppointments = users
-    .filter(u => u.role === 'patient')
-    .flatMap(user =>
-      (user.appointments || []).map(app => ({
-        ...app,
-        patientName: user.name,
-        patientId: user.id,
-        email: user.email,
-      }))
-    );
-
   return (
-    <div className="min-h-screen p-8 bg-gradient-to-b from-gray-50 to-white">
-      <h1 className="text-3xl font-bold text-center text-indigo-700 mb-8">
-        🛠 Admin Dashboard – Approve/Reject Appointments
-      </h1>
-
-      {allAppointments.length === 0 ? (
-        <p className="text-center text-gray-500">No appointments found.</p>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {allAppointments.map(app => (
-            <div
-              key={app.id}
-              className="bg-white p-5 rounded-xl shadow border hover:shadow-lg transition-all"
-            >
-              <div className="mb-2 flex items-center gap-2 text-sm text-gray-600">
-                <UserIcon className="w-5 h-5 text-indigo-500" />
-                {app.patientName} ({app.email})
-              </div>
-              <p><strong>🆔 ID:</strong> {app.id}</p>
-              <p><strong>💊 Treatment:</strong> {app.treatment}</p>
-              <p><strong>🗓 Date:</strong> {app.date}</p>
-              <p><strong>⏰ Time:</strong> {app.time}</p>
-              <p><strong>💰 Cost:</strong> ₹{app.cost}</p>
-              <p><strong>Status:</strong> <span className="capitalize">{app.status}</span></p>
-
-              {app.status === 'upcoming' && (
-                <div className="mt-3 flex gap-3">
-                  <button
-                    onClick={() =>
-                      handleUpdateStatus(app.patientId, app.id, 'approved')
-                    }
-                    className="flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded"
-                  >
-                    <CheckCircleIcon className="w-4 h-4" />
-                    Approve
-                  </button>
-                  <button
-                    onClick={() =>
-                      handleUpdateStatus(app.patientId, app.id, 'rejected')
-                    }
-                    className="flex items-center gap-1 bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
-                  >
-                    <XCircleIcon className="w-4 h-4" />
-                    Reject
-                  </button>
-                </div>
-              )}
-            </div>
-          ))}
+    <div className="min-h-screen bg-gradient-to-b from-white via-blue-50 to-blue-100 p-6 transition-all">
+      {/* Header */}
+      <header className="flex justify-between items-center mb-8 sticky top-0 bg-white z-10 p-4 rounded-xl shadow-md">
+        <div>
+          <h1 className="text-2xl font-extrabold text-indigo-700">
+            🦷 Welcome, {user?.email}
+          </h1>
+          <p className="text-sm text-gray-500">Admin Dashboard</p>
         </div>
-      )}
+        <button
+          onClick={logout}
+          className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow-md transition"
+        >
+          🚪 Logout
+        </button>
+      </header>
+
+      {/* Mock Data Button */}
+      <motion.div
+        custom={0}
+        initial="hidden"
+        animate="visible"
+        variants={sectionVariants}
+        className="mb-6"
+      >
+        <MockDataButton />
+      </motion.div>
+
+      {/* KPIs */}
+      <motion.section
+        custom={1}
+        initial="hidden"
+        animate="visible"
+        variants={sectionVariants}
+        className="bg-white rounded-2xl shadow-md p-6 mb-8 hover:shadow-xl transition"
+      >
+        <h2 className="text-xl font-semibold mb-4 text-blue-600">
+          📊 Dashboard KPIs
+        </h2>
+        <DashboardKPIs />
+      </motion.section>
+
+      {/* Patient Management */}
+      <motion.section
+        custom={2}
+        initial="hidden"
+        animate="visible"
+        variants={sectionVariants}
+        className="bg-white rounded-2xl shadow-md p-6 mb-8 hover:shadow-xl transition"
+      >
+        <h2 className="text-xl font-semibold mb-4 text-blue-600">
+          👥 Patient Management
+        </h2>
+        <PatientList />
+      </motion.section>
+
+      {/* Incident / Appointment Management */}
+      <motion.section
+        custom={3}
+        initial="hidden"
+        animate="visible"
+        variants={sectionVariants}
+        className="bg-white rounded-2xl shadow-md p-6 mb-8 hover:shadow-xl transition"
+      >
+        <h2 className="text-xl font-semibold mb-4 text-blue-600">
+          📂 Appointments & Incidents
+        </h2>
+        <IncidentList />
+      </motion.section>
+
+      {/* Calendar */}
+      <motion.section
+        custom={4}
+        initial="hidden"
+        animate="visible"
+        variants={sectionVariants}
+        className="bg-white rounded-2xl shadow-md p-6 hover:shadow-xl transition"
+      >
+        <h2 className="text-xl font-semibold mb-4 text-blue-600">
+          📅 Calendar View
+        </h2>
+        <CalendarView />
+      </motion.section>
     </div>
   );
 };
